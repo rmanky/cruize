@@ -319,7 +319,7 @@ const createMap = (latLng) => {
  */
 const createMarker = ({map, latLng}) => {
     let icon = {
-        url: 'https://openclipart.org/image/2400px/svg_to_png/192456/car-black.png', // url
+        url: 'https://www.redbook.com.au/inspect/images/car.png', // url
         scaledSize: new google.maps.Size(35, 75),
         origin: new google.maps.Point(0, 0), // origin
         anchor: new google.maps.Point(35 / 2, 75 / 2) // anchor

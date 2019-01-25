@@ -2,18 +2,22 @@
 <html lang="en">
 <head>
     <script src="https://www.gstatic.com/firebasejs/5.8.0/firebase.js"></script>
-    <script src="script.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDemWRIwfpRjiUGq-M_c-3IfHTVy0LvLQg&callback=init" async defer></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDemWRIwfpRjiUGq-M_c-3IfHTVy0LvLQg&callback=init"
+            async defer></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset="UTF-8">
     <title>CRUIZE</title>
 </head>
 <body>
-    <div id="header">
-        <i id="header-menu" class="material-icons">menu</i>
-        <h1 id="header-text"> CRUIZE </h1>
-    </div>
+<div id="header">
+    <ul id="header-list">
+        <li id="header-menu" class="material-icons">menu</li>
+        <li id="header-text"> CRUIZE</li>
+    </ul>
+</div>
+<div id="header-search"><input id="search-bar" type="text" placeholder="Search..."></div>
 <div id="map"></div>
+<script src="script.js" async defer></script>
 </body>
 </html>

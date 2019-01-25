@@ -4,7 +4,7 @@
  * @param {number} lng
  * @return {Object}
  */
-var config = {
+let config = {
     apiKey: "AIzaSyAlBJ7jY4OW4M4_HtXRlqUzOFrbNK0IeXM",
     authDomain: "cruize-4dc36.firebaseapp.com",
     databaseURL: "https://cruize-4dc36.firebaseio.com",
@@ -19,8 +19,6 @@ const createMap = ({ lat, lng }) => {
     return new google.maps.Map(document.getElementById('map'), {
         center: {lat, lng},
         disableDefaultUI: true,
-        mapTypeId: 'satellite',
-        tilt: 45,
         zoom: 20
     });
 };
@@ -73,7 +71,7 @@ const getPositionErrorMessage = code => {
         case 3:
             return 'Timeout reached.';
     }
-}
+};
 
 /**
  * Initialize the application.
@@ -84,13 +82,37 @@ function init() {
     const map = createMap(initialPosition);
     const marker = createMarker({ map, position: initialPosition });
 
-    let watchId = trackLocation({
+    let directionsService = new google.maps.DirectionsService;
+    let directionsDisplay = new google.maps.DirectionsRenderer({preserveViewport: true, map: map});
+
+    displayRoute('Worcester, MA', 'Boston, MA', directionsService,
+        directionsDisplay);
+
+    trackLocation({
         onSuccess: ({ coords: { latitude: lat, longitude: lng } }) => {
             marker.setPosition({ lat, lng });
+            displayRoute(new google.maps.LatLng(lat, lng), 'Boston, MA', directionsService, directionsDisplay);
             map.panTo({ lat, lng });
         },
         onError: err => {
             console.log(`Error: ${err.message || getPositionErrorMessage(err.code)}`);
+        }
+    });
+
+    directionsDisplay.setMap(map);
+    directionsDisplay.setPanel(document.getElementById('directionsPanel'));
+}
+
+function displayRoute(origin, destination, service, display) {
+    service.route({
+        origin: origin,
+        destination: destination,
+        travelMode: 'DRIVING'
+    }, function(response, status) {
+        if (status === 'OK') {
+            display.setDirections(response);
+        } else {
+            alert('Could not display directions due to: ' + status);
         }
     });
 }

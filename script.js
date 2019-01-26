@@ -11,6 +11,8 @@ firebase.initializeApp(config);
 
 let searchBar = document.getElementById('search-bar');
 
+let searchList = document.getElementById('search-list');
+
 searchBar.addEventListener("keyup", function (event) {
     event.preventDefault();
     if (event.keyCode === 13) {
@@ -22,21 +24,6 @@ searchBar.addEventListener("keyup", function (event) {
 let orsDirections = new Openrouteservice.Directions({
     api_key: '5b3ce3597851110001cf6248a488307605e94252ab6ba375cc36a86e'
 });
-
-/*
-orsDirections.calculate({
-    coordinates: [[-71.7142697, 42.163863], [-71.0589, 42.3601]],
-    profile: 'driving-car',
-    geometry_format: 'encodedpolyline',
-    format: 'json',
-}).then(function (json) {
-    // Add your own result handling here
-    console.log(JSON.stringify(json));
-    createRoute(json.routes[0].geometry);
-}).catch(function (err) {
-    console.error(err);
-});
-*/
 
 document.addEventListener("click", function (event) {
     // If user clicks inside the element, do nothing
@@ -68,6 +55,13 @@ styles = {
     })
 };
 
+let feature = new ol.Feature({
+    id: 'route',
+    type: 'route'
+});
+feature.setStyle(styles.route);
+vectorSource.addFeature(feature);
+
 function createRoute(polyline) {
     // route is ol.geom.LineString
     let route = new ol.format.Polyline({
@@ -76,12 +70,7 @@ function createRoute(polyline) {
         dataProjection: 'EPSG:4326',
         featureProjection: 'EPSG:3857'
     });
-    let feature = new ol.Feature({
-        type: 'route',
-        geometry: route
-    });
-    feature.setStyle(styles.route);
-    vectorSource.addFeature(feature);
+    feature.setGeometry(route);
 }
 
 let baseLayer = new ol.layer.Tile({
@@ -102,7 +91,7 @@ let map = new ol.Map({
 let geolocation = new ol.Geolocation({
     // take the projection to use from the map's view
     tracking: true,
-    projection: map.getView().getProjection()
+    projection: view.getProjection()
 });
 
 // listen to changes in position
@@ -111,26 +100,75 @@ geolocation.on('change', function () {
     myLocation.getGeometry().setCoordinates(pos);
 });
 
-function findDestination(name) {
-    fetch('http://nominatim.openstreetmap.org/search?format=json&q=' + name).then(function(response) {
-        return response.json();
-    }).then(function(json) {
-        setDestination([json[0].lon, json[0].lat]);
-    });
-};
-
 let destinationMarker = new ol.Feature({
-    geometry: new ol.geom.Point([0,0]),
+    geometry: new ol.geom.Point([0, 0]),
 });
 
-function setDestination(dest) {
-    dest = ol.proj.fromLonLat(dest.map(Number));
-    destinationMarker.getGeometry().setCoordinates(dest);
-    map.getView().animate({
-        center: dest,
-        duration: 3000
+function findDestination(name) {
+    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + name).then(function (response) {
+        return response.json();
+    }).then(function (json) {
+        // clear out results
+        clearChildren();
+        for (let i = 0; i < json.length; i++) {
+            let listItem = document.createElement('li');
+            listItem.innerHTML = json[i].display_name;
+            listItem.onclick = function () {
+                let dest = [json[i].lon, json[i].lat];
+                dest = ol.proj.fromLonLat(dest.map(Number));
+                setDestination(dest);
+                calcRoute(dest);
+                clearChildren();
+            };
+            searchList.appendChild(listItem);
+        }
+    }).catch(function (err) {
+        console.log(err);
     });
-    if(!vectorSource.getFeatures().includes(destinationMarker)) {
+}
+
+function clearChildren() {
+    while (searchList.lastChild) {
+        searchList.removeChild(searchList.lastChild);
+    }
+}
+
+function setDestination(dest) {
+    destinationMarker.getGeometry().setCoordinates(dest);
+    if (!vectorSource.getFeatures().includes(destinationMarker)) {
         vectorSource.addFeature(destinationMarker);
     }
+}
+
+function calcRoute(dest) {
+    let myPos = ol.proj.toLonLat(myLocation.getGeometry().getCoordinates());
+    dest = ol.proj.toLonLat(dest);
+    console.log(dest);
+    console.log(myPos);
+    orsDirections.calculate({
+        coordinates: [myPos, dest],
+        profile: 'driving-car',
+        geometry_format: 'encodedpolyline',
+        format: 'json',
+    }).then(function (json) {
+        // Add your own result handling here
+        createRoute(json.routes[0].geometry);
+    }).catch(function (err) {
+        console.error(err);
+    });
+
+    cameraAnim(ol.proj.fromLonLat(dest), ol.proj.fromLonLat(myPos));
+}
+
+function cameraAnim(dest, myPos) {
+    let ext = ol.extent.boundingExtent([dest, myPos]);
+    view.fit(ext, map.getSize());
+    view.setZoom(view.getZoom() - 0.5);
+    setTimeout(function () {
+        view.animate({
+            center: myPos,
+            zoom: 18,
+            duration: 2500
+        })
+    }, 1500);
 }

@@ -27,6 +27,7 @@
     margin: 10vh auto 0 1vh;
     height: 5vh;
     z-index: 1;
+    width: 50vw;
 }
 
 #search-bar {
@@ -34,12 +35,40 @@
     color: white;
     font-size: 3vh;
     height: 100%;
-    width: fit-content;
-    margin: 0;
     padding: 0 1vh 0 1vh;
-    border-radius: 5px;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    box-shadow: 0 0 20px -5px black;
+    width: inherit;
+}
+
+#search-list {
+    background-color: white;
+    margin: 0 1vh;
+    padding: 0;
+    width: inherit;
+    font-size: 3vh;
+    list-style: none;
+    border-radius: 0 0 2vh 2vh;
+    box-shadow: 0 0 20px -5px black;
+}
+
+#search-list li {
+    padding: 1vh;
+    border: 0 solid darkgrey;
+    border-bottom-width: 0.2vh;
+    transition: 0.5s ease;
+}
+
+#search-list li:hover {
+    background-color: lightgray;
+}
+
+#search-list li:last-child {
     border: none;
 }
+
 
 #header-search input::placeholder {
     color: white;
@@ -55,7 +84,6 @@
 #header-text {
     color: white;
     font-size: 4vh;
-    font-family: sans-serif;
 }
 
 /* Optional: Makes the sample page fill the window. */
@@ -63,4 +91,5 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: sans-serif;
 }

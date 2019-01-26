@@ -1,9 +1,3 @@
-/**
- * Create google maps Map instance.
- * @param {number} lat
- * @param {number} lng
- * @return {Object}
- */
 let config = {
     apiKey: "AIzaSyAlBJ7jY4OW4M4_HtXRlqUzOFrbNK0IeXM",
     authDomain: "cruize-4dc36.firebaseapp.com",
@@ -15,404 +9,97 @@ let config = {
 console.log("Firebase: Begin!");
 firebase.initializeApp(config);
 
-let directionsService, directionsDisplay, pos;
-
 document.getElementById("search-bar").addEventListener("keyup", function (event) {
     event.preventDefault();
     if (event.keyCode === 13) {
         let destination = document.getElementById("search-bar").value;
         console.log(destination);
-        displayRoute(destination);
     }
 });
 
-const createMap = (latLng) => {
-    return new google.maps.Map(document.getElementById('map'), {
-        center: latLng,
-        disableDefaultUI: true,
-        zoom: 20,
-        styles: [
-            {
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#1d2c4d"
-                    }
-                ]
-            },
-            {
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#8ec3b9"
-                    }
-                ]
-            },
-            {
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    {
-                        "color": "#1a3646"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative.country",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#4b6878"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative.land_parcel",
-                "elementType": "labels",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative.land_parcel",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#64779e"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative.province",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#4b6878"
-                    }
-                ]
-            },
-            {
-                "featureType": "landscape.man_made",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#334e87"
-                    }
-                ]
-            },
-            {
-                "featureType": "landscape.natural",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#023e58"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#283d6a"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "labels.text",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#6f9ba5"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    {
-                        "color": "#1d2c4d"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.business",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.park",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#023e58"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.park",
-                "elementType": "labels.text",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.park",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#3C7680"
-                    }
-                ]
-            },
-            {
-                "featureType": "road",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#304a7d"
-                    }
-                ]
-            },
-            {
-                "featureType": "road",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#98a5be"
-                    }
-                ]
-            },
-            {
-                "featureType": "road",
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    {
-                        "color": "#1d2c4d"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#2c6675"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#255763"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#b0d5ce"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    {
-                        "color": "#023e58"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.local",
-                "elementType": "labels",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#98a5be"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit",
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    {
-                        "color": "#1d2c4d"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit.line",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#283d6a"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit.station",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#3a4762"
-                    }
-                ]
-            },
-            {
-                "featureType": "water",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#0e1626"
-                    }
-                ]
-            },
-            {
-                "featureType": "water",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#4e6d70"
-                    }
-                ]
-            }
-        ]
+window.onload = function () {
+
+    let orsDirections = new Openrouteservice.Directions({
+        api_key: '5b3ce3597851110001cf6248a488307605e94252ab6ba375cc36a86e'
+    });
+
+    orsDirections.calculate({
+        coordinates: [[-71.7142697, 42.16386300000002], [-71.0589, 42.3601]],
+        profile: 'driving-car',
+        extra_info: ['waytype', 'steepness'],
+        geometry_format: 'encodedpolyline',
+        format: 'json',
+    }).then(function (json) {
+            // Add your own result handling here
+            console.log(JSON.stringify(json));
+            createRoute(json.routes[0].geometry);
+    }).catch(function (err) {
+            console.error(err);
     });
 };
 
-/**
- * Create google maps Marker instance.
- * @param {Object} map
- * @param {Object} position
- * @return {Object}
- */
-const createMarker = ({map, latLng}) => {
-    let icon = {
-        url: 'https://www.redbook.com.au/inspect/images/car.png', // url
-        scaledSize: new google.maps.Size(35, 75),
-        origin: new google.maps.Point(0, 0), // origin
-        anchor: new google.maps.Point(35 / 2, 75 / 2) // anchor
-    };
-    return new google.maps.Marker({map, icon, latLng});
+let marker = new ol.Feature({
+    geometry: new ol.geom.Point([0, 0])
+});
+
+let vectorSource = new ol.source.Vector({
+    features: [marker]
+});
+
+let vectorLayer = new ol.layer.Vector({
+    source: vectorSource
+});
+
+styles = {
+    route: new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            width: 8, color: [72, 61, 139, 1.0]
+        })
+    })
 };
 
-/**
- * Track the user location.
- * @param {Object} onSuccess
- * @param {Object} [onError]
- * @return {number}
- */
-const trackLocation = ({
-                           onSuccess, onError = () => {
-    }
-                       }) => {
-    if ('geolocation' in navigator === false) {
-        return onError(new Error('Geolocation is not supported by your browser.'));
-    }
-
-    return navigator.geolocation.watchPosition(onSuccess, onError, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
+function createRoute(polyline) {
+    // route is ol.geom.LineString
+    let route = new ol.format.Polyline({
+        factor: 1e5
+    }).readGeometry(polyline, {
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857'
     });
-};
-
-/**
- * Get position error message from the given error code.
- * @param {number} code
- * @return {String}
- */
-const getPositionErrorMessage = code => {
-    switch (code) {
-        case 1:
-            return 'Permission denied.';
-        case 2:
-            return 'Position unavailable.';
-        case 3:
-            return 'Timeout reached.';
-    }
-};
-
-/**
- * Initialize the application.
- * Automatically called by the google maps API once it's loaded.
- */
-function init() {
-    pos = new google.maps.LatLng(59.32, 17.84);
-    const map = createMap(pos);
-    const marker = createMarker({map, pos});
-
-    directionsService = new google.maps.DirectionsService;
-    let polyOptions = ({
-        clickable: false,
-        strokeColor: 'blueviolet',
-        strokeWeight: 10,
+    let feature = new ol.Feature({
+        type: 'route',
+        geometry: route
     });
-    directionsDisplay = new google.maps.DirectionsRenderer({
-        preserveViewport: true,
-        map: map,
-        suppressMarkers: true,
-        polylineOptions: polyOptions
-    });
-
-    trackLocation({
-        onSuccess: ({coords: {latitude: lat, longitude: lng}}) => {
-            marker.setPosition({lat, lng});
-            map.panTo({lat, lng});
-            pos = new google.maps.LatLng(lat, lng);
-        },
-        onError: err => {
-            console.log(`Error: ${err.message || getPositionErrorMessage(err.code)}`);
-        }
-    });
-    directionsDisplay.setMap(map);
+    feature.setStyle(styles.route);
+    vectorSource.addFeature(feature);
 }
 
-function displayRoute(destination) {
-    if (directionsService != null && directionsDisplay != null) {
-        directionsService.route({
-            origin: pos,
-            destination: destination,
-            travelMode: 'DRIVING'
-        }, function (response, status) {
-            if (status === 'OK') {
-                directionsDisplay.setDirections(response);
-            } else {
-                alert('Could not display directions due to: ' + status);
-            }
-        });
-    } else {
-        console.error("DirectionsService or DirectionsDisplay was null")
-    }
-}
+let baseLayer = new ol.layer.Tile({
+    source: new ol.source.OSM()
+});
+
+let view = new ol.View({
+    center: [0, 0],
+    zoom: 18
+});
+
+let map = new ol.Map({
+    target: 'map',
+    layers: [baseLayer, vectorLayer],
+    view: view
+});
+
+
+let geolocation = new ol.Geolocation({
+    // take the projection to use from the map's view
+    tracking: true,
+    projection: map.getView().getProjection()
+});
+
+// listen to changes in position
+geolocation.on('change', function () {
+    let pos = geolocation.getPosition();
+    console.log(ol.proj.toLonLat(pos));
+    map.getView().setCenter(pos)
+    marker.getGeometry().setCoordinates(pos);
+});

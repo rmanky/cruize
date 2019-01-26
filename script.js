@@ -9,41 +9,51 @@ let config = {
 console.log("Firebase: Begin!");
 firebase.initializeApp(config);
 
-document.getElementById("search-bar").addEventListener("keyup", function (event) {
+let searchBar = document.getElementById('search-bar');
+
+searchBar.addEventListener("keyup", function (event) {
     event.preventDefault();
     if (event.keyCode === 13) {
-        let destination = document.getElementById("search-bar").value;
-        console.log(destination);
+        let name = document.getElementById("search-bar").value;
+        findDestination(name);
     }
 });
 
-window.onload = function () {
+let orsDirections = new Openrouteservice.Directions({
+    api_key: '5b3ce3597851110001cf6248a488307605e94252ab6ba375cc36a86e'
+});
 
-    let orsDirections = new Openrouteservice.Directions({
-        api_key: '5b3ce3597851110001cf6248a488307605e94252ab6ba375cc36a86e'
-    });
+/*
+orsDirections.calculate({
+    coordinates: [[-71.7142697, 42.163863], [-71.0589, 42.3601]],
+    profile: 'driving-car',
+    geometry_format: 'encodedpolyline',
+    format: 'json',
+}).then(function (json) {
+    // Add your own result handling here
+    console.log(JSON.stringify(json));
+    createRoute(json.routes[0].geometry);
+}).catch(function (err) {
+    console.error(err);
+});
+*/
 
-    orsDirections.calculate({
-        coordinates: [[-71.7142697, 42.16386300000002], [-71.0589, 42.3601]],
-        profile: 'driving-car',
-        extra_info: ['waytype', 'steepness'],
-        geometry_format: 'encodedpolyline',
-        format: 'json',
-    }).then(function (json) {
-            // Add your own result handling here
-            console.log(JSON.stringify(json));
-            createRoute(json.routes[0].geometry);
-    }).catch(function (err) {
-            console.error(err);
-    });
-};
+document.addEventListener("click", function (event) {
+    // If user clicks inside the element, do nothing
+    if (event.target.id === 'search-bar') {
+        return;
+    }
+    if (searchBar === document.activeElement) {
+        searchBar.blur();
+    }
+});
 
-let marker = new ol.Feature({
+let myLocation = new ol.Feature({
     geometry: new ol.geom.Point([0, 0])
 });
 
 let vectorSource = new ol.source.Vector({
-    features: [marker]
+    features: [myLocation]
 });
 
 let vectorLayer = new ol.layer.Vector({
@@ -89,7 +99,6 @@ let map = new ol.Map({
     view: view
 });
 
-
 let geolocation = new ol.Geolocation({
     // take the projection to use from the map's view
     tracking: true,
@@ -99,7 +108,29 @@ let geolocation = new ol.Geolocation({
 // listen to changes in position
 geolocation.on('change', function () {
     let pos = geolocation.getPosition();
-    console.log(ol.proj.toLonLat(pos));
-    map.getView().setCenter(pos)
-    marker.getGeometry().setCoordinates(pos);
+    myLocation.getGeometry().setCoordinates(pos);
 });
+
+function findDestination(name) {
+    fetch('http://nominatim.openstreetmap.org/search?format=json&q=' + name).then(function(response) {
+        return response.json();
+    }).then(function(json) {
+        setDestination([json[0].lon, json[0].lat]);
+    });
+};
+
+let destinationMarker = new ol.Feature({
+    geometry: new ol.geom.Point([0,0]),
+});
+
+function setDestination(dest) {
+    dest = ol.proj.fromLonLat(dest.map(Number));
+    destinationMarker.getGeometry().setCoordinates(dest);
+    map.getView().animate({
+        center: dest,
+        duration: 3000
+    });
+    if(!vectorSource.getFeatures().includes(destinationMarker)) {
+        vectorSource.addFeature(destinationMarker);
+    }
+}

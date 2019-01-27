@@ -24,7 +24,9 @@
 
 #header-search {
     position: absolute;
-    margin: 10vh auto 0 1vh;
+    left: 0;
+    right: 0;
+    margin: 10vh auto;
     height: 5vh;
     z-index: 1;
     width: 50vw;
@@ -36,6 +38,7 @@
     font-size: 3vh;
     height: 100%;
     padding: 0 1vh 0 1vh;
+    margin-left: -1vh;
     border-radius: 1vh;
     border: none;
     outline: none;
@@ -45,7 +48,7 @@
 
 #search-list {
     background-color: white;
-    margin: 0 1vh;
+    margin: 0;
     padding: 0;
     width: inherit;
     font-size: 3vh;
@@ -71,7 +74,7 @@
 
 
 #header-search input::placeholder {
-    color: white;
+    color: lightgray;
 }
 
 #header-menu {
@@ -84,6 +87,10 @@
 #header-text {
     color: white;
     font-size: 4vh;
+}
+
+.ol-overlaycontainer-stopevent {
+    display: none;
 }
 
 /* Optional: Makes the sample page fill the window. */

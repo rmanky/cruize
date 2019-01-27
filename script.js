@@ -35,9 +35,13 @@ document.addEventListener("click", function (event) {
     }
 });
 
+let worcester = [-71.8023, 42.2626];
+
 let myLocation = new ol.Feature({
-    geometry: new ol.geom.Point([0, 0])
+    geometry: new ol.geom.Point(ol.proj.fromLonLat(worcester))
 });
+
+let myPos = ol.proj.fromLonLat(worcester);
 
 let vectorSource = new ol.source.Vector({
     features: [myLocation]
@@ -78,8 +82,8 @@ let baseLayer = new ol.layer.Tile({
 });
 
 let view = new ol.View({
-    center: [0, 0],
-    zoom: 18
+    center: ol.proj.fromLonLat(worcester),
+    zoom: 10
 });
 
 let map = new ol.Map({
@@ -96,8 +100,8 @@ let geolocation = new ol.Geolocation({
 
 // listen to changes in position
 geolocation.on('change', function () {
-    let pos = geolocation.getPosition();
-    myLocation.getGeometry().setCoordinates(pos);
+    myPos = geolocation.getPosition();
+    myLocation.getGeometry().setCoordinates(myPos);
 });
 
 let destinationMarker = new ol.Feature({
@@ -141,12 +145,12 @@ function setDestination(dest) {
 }
 
 function calcRoute(dest) {
-    let myPos = ol.proj.toLonLat(myLocation.getGeometry().getCoordinates());
+    let myPosConv = ol.proj.toLonLat(myPos);
     dest = ol.proj.toLonLat(dest);
     console.log(dest);
-    console.log(myPos);
+    console.log(myPosConv);
     orsDirections.calculate({
-        coordinates: [myPos, dest],
+        coordinates: [myPosConv, dest],
         profile: 'driving-car',
         geometry_format: 'encodedpolyline',
         format: 'json',
@@ -157,18 +161,22 @@ function calcRoute(dest) {
         console.error(err);
     });
 
-    cameraAnim(ol.proj.fromLonLat(dest), ol.proj.fromLonLat(myPos));
+    cameraAnim(ol.proj.fromLonLat(dest), myPos);
 }
 
-function cameraAnim(dest, myPos) {
-    let ext = ol.extent.boundingExtent([dest, myPos]);
+function cameraAnim(from, to) {
+    let ext = ol.extent.boundingExtent([from, to]);
     view.fit(ext, map.getSize());
     view.setZoom(view.getZoom() - 0.5);
     setTimeout(function () {
-        view.animate({
-            center: myPos,
-            zoom: 18,
-            duration: 2500
-        })
-    }, 1500);
+        centerView(to);
+    }, 1000);
+}
+
+function centerView() {
+    view.animate({
+        center: myPos,
+        zoom: 18,
+        duration: 2000
+    })
 }

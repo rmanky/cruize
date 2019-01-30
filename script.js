@@ -35,46 +35,62 @@ document.addEventListener("click", function (event) {
     }
 });
 
-let worcester = [-71.8023, 42.2626];
+styles = {
+    route: new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            width: 8, color: [72, 61, 139, 1.0]
+        })
+    }),
+    x: new ol.style.Style({
+        image: new ol.style.RegularShape({
+            stroke: new ol.style.Stroke({color: 'black', width: 2}),
+            points: 4,
+            radius: 10,
+            radius2: 0,
+            angle: Math.PI / 4
+        })
+    })
+};
 
-let myLocation = new ol.Feature({
-    geometry: new ol.geom.Point(ol.proj.fromLonLat(worcester))
+let defaultCenter = [-71.8023, 42.2626];
+
+let myPos = ol.proj.fromLonLat(defaultCenter);
+
+let myMarker = new ol.Feature({
+    geometry: new ol.geom.Point(myPos)
 });
 
-let myPos = ol.proj.fromLonLat(worcester);
+let markerClosest = new ol.Feature({
+    geometry: new ol.geom.Point(ol.proj.fromLonLat(defaultCenter))
+});
+markerClosest.setStyle(styles.x)
+
 
 let vectorSource = new ol.source.Vector({
-    features: [myLocation]
+    features: [myMarker, markerClosest]
 });
 
 let vectorLayer = new ol.layer.Vector({
     source: vectorSource
 });
 
-styles = {
-    route: new ol.style.Style({
-        stroke: new ol.style.Stroke({
-            width: 8, color: [72, 61, 139, 1.0]
-        })
-    })
-};
 
-let feature = new ol.Feature({
+let route = new ol.Feature({
     id: 'route',
-    type: 'route'
+    type: 'route',
+    style: styles.route
 });
-feature.setStyle(styles.route);
-vectorSource.addFeature(feature);
+route.setStyle(styles.route);
+vectorSource.addFeature(route);
 
 function createRoute(polyline) {
-    // route is ol.geom.LineString
-    let route = new ol.format.Polyline({
-        factor: 1e5
-    }).readGeometry(polyline, {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857'
+    let newPolyline = polyline.map(function(pos, index)
+    {
+        pos = ol.proj.fromLonLat(pos);
+        return [pos[0], pos[1], index]
     });
-    feature.setGeometry(route);
+    let newRoute = new ol.geom.MultiLineString([newPolyline], 'XYM');
+    route.setGeometry(newRoute);
 }
 
 let baseLayer = new ol.layer.Tile({
@@ -82,7 +98,7 @@ let baseLayer = new ol.layer.Tile({
 });
 
 let view = new ol.View({
-    center: ol.proj.fromLonLat(worcester),
+    center: ol.proj.fromLonLat(defaultCenter),
     zoom: 10
 });
 
@@ -99,9 +115,15 @@ let geolocation = new ol.Geolocation({
 });
 
 // listen to changes in position
-geolocation.on('change', function () {
+geolocation.on('change', function ()
+{
     myPos = geolocation.getPosition();
-    myLocation.getGeometry().setCoordinates(myPos);
+    myMarker.getGeometry().setCoordinates(myPos);
+    if(route.getGeometry() !== undefined) {
+        let closestPoint = route.getGeometry().getClosestPoint(myPos);
+        markerClosest.getGeometry().setCoordinates(closestPoint);
+        console.log(Math.round(closestPoint[2]));
+    }
 });
 
 let destinationMarker = new ol.Feature({
@@ -113,16 +135,16 @@ function findDestination(name) {
         return response.json();
     }).then(function (json) {
         // clear out results
-        clearChildren();
+        while (searchList.lastChild) {
+            searchList.removeChild(searchList.lastChild);
+        }
         for (let i = 0; i < json.length; i++) {
             let listItem = document.createElement('li');
+            let dest = [json[i].lon, json[i].lat];
+            dest = ol.proj.fromLonLat(dest.map(Number));
             listItem.innerHTML = json[i].display_name;
             listItem.onclick = function () {
-                let dest = [json[i].lon, json[i].lat];
-                dest = ol.proj.fromLonLat(dest.map(Number));
                 setDestination(dest);
-                calcRoute(dest);
-                clearChildren();
             };
             searchList.appendChild(listItem);
         }
@@ -131,17 +153,12 @@ function findDestination(name) {
     });
 }
 
-function clearChildren() {
-    while (searchList.lastChild) {
-        searchList.removeChild(searchList.lastChild);
-    }
-}
-
 function setDestination(dest) {
     destinationMarker.getGeometry().setCoordinates(dest);
     if (!vectorSource.getFeatures().includes(destinationMarker)) {
         vectorSource.addFeature(destinationMarker);
     }
+    calcRoute(dest);
 }
 
 function calcRoute(dest) {
@@ -152,7 +169,7 @@ function calcRoute(dest) {
     orsDirections.calculate({
         coordinates: [myPosConv, dest],
         profile: 'driving-car',
-        geometry_format: 'encodedpolyline',
+        geometry_format: 'polyline',
         format: 'json',
     }).then(function (json) {
         // Add your own result handling here

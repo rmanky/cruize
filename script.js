@@ -91,6 +91,7 @@ function createRoute(polyline) {
     });
     let newRoute = new ol.geom.MultiLineString([newPolyline], 'XYM');
     route.setGeometry(newRoute);
+    moveClosestMarker();
 }
 
 let baseLayer = new ol.layer.Tile({
@@ -120,11 +121,15 @@ geolocation.on('change', function ()
     myPos = geolocation.getPosition();
     myMarker.getGeometry().setCoordinates(myPos);
     if(route.getGeometry() !== undefined) {
-        let closestPoint = route.getGeometry().getClosestPoint(myPos);
-        markerClosest.getGeometry().setCoordinates(closestPoint);
-        console.log(Math.round(closestPoint[2]));
+        moveClosestMarker();
     }
 });
+
+function moveClosestMarker() {
+    let closestPoint = route.getGeometry().getClosestPoint(myPos);
+    markerClosest.getGeometry().setCoordinates(closestPoint);
+    console.log(Math.round(closestPoint[2]));
+}
 
 let destinationMarker = new ol.Feature({
     geometry: new ol.geom.Point([0, 0]),
@@ -135,15 +140,13 @@ function findDestination(name) {
         return response.json();
     }).then(function (json) {
         // clear out results
-        while (searchList.lastChild) {
-            searchList.removeChild(searchList.lastChild);
-        }
         for (let i = 0; i < json.length; i++) {
             let listItem = document.createElement('li');
             let dest = [json[i].lon, json[i].lat];
             dest = ol.proj.fromLonLat(dest.map(Number));
             listItem.innerHTML = json[i].display_name;
             listItem.onclick = function () {
+                clearChildren();
                 setDestination(dest);
             };
             searchList.appendChild(listItem);
@@ -151,6 +154,12 @@ function findDestination(name) {
     }).catch(function (err) {
         console.log(err);
     });
+}
+
+function clearChildren() {
+    while (searchList.lastChild) {
+        searchList.removeChild(searchList.lastChild);
+    }
 }
 
 function setDestination(dest) {
@@ -177,7 +186,6 @@ function calcRoute(dest) {
     }).catch(function (err) {
         console.error(err);
     });
-
     cameraAnim(ol.proj.fromLonLat(dest), myPos);
 }
 

@@ -1,49 +1,113 @@
-/* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-#map {
+/* Optional: Makes the sample page fill the window. */
+html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: sans-serif;
+}
+
+#map {
+    height: 100%;
 }
 
 #header {
     z-index: 1;
     position: absolute;
     width: 100%;
-    height: auto;
     background-color: darkslateblue;
     box-shadow: 0 0 20px -5px black
+}
+
+#header-menu {
+    color: white;
+    font-size: 2rem;
+    margin-right: 2vh;
+    align-self: center;
+}
+
+#header-text {
+    color: white;
+    font-size: 2rem;
 }
 
 #header-list {
     list-style: none;
     display: flex;
-    margin: 2vh 0;
-    padding-left: 2vh;
+    margin: 1rem 0;
+    padding-left: 1rem;
 }
 
 #header-search {
     position: absolute;
     left: 0;
     right: 0;
-    margin: 10vh auto;
-    height: 5vh;
+    margin: 5rem auto;
     z-index: 1;
-    width: 50vw;
+    width: fit-content;
+    box-shadow: 0 0 20px -5px black;
+    border-radius: 0.5rem;
+}
+
+#header-search input::placeholder {
+    color: white;
+    opacity: 0.5;
+}
+
+#search-form {
+    display: flex;
+    background: rgba(0,0,0,0.0);
 }
 
 #search-bar {
-    background-color: darkslateblue;
-    color: white;
-    font-size: 3vh;
-    height: 100%;
-    padding: 0 1vh 0 1vh;
-    margin-left: -1vh;
-    border-radius: 1vh;
+    border-radius: 0.5rem 0 0 0.5rem;
     border: none;
     outline: none;
-    box-shadow: 0 0 20px -5px black;
-    width: inherit;
+    background-color: darkslateblue;
+    color: white;
+    font-size: 1.8rem;
+    padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+    box-sizing: border-box;
+}
+
+#search-button {
+    border-radius: 0 0.5rem 0.5rem 0;
+    background-color: darkslateblue;
+    color: white;
+    float: right;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+#search-button i{
+    transition: 0.5s ease;
+    padding: 0 0.5rem;
+    font-size: 2rem;
+    vertical-align: text-bottom;
+}
+
+#search-button:hover i {
+    opacity: 0.5;
+}
+
+.ol-overlaycontainer-stopevent {
+    visibility: hidden;
+}
+
+.ol-attribution ul {
+    list-style: none;
+    position: absolute;
+    visibility: visible;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    margin: 1rem;
+    padding: 0.25rem;
+    background-color: white;
+    opacity: 0.75;
+    border-radius: 0.25rem;
 }
 
 #search-list {
@@ -51,7 +115,7 @@
     margin: 0;
     padding: 0;
     width: inherit;
-    font-size: 3vh;
+    font-size: 1.5rem;
     list-style: none;
     border-radius: 0 0 2vh 2vh;
     box-shadow: 0 0 20px -5px black;
@@ -73,30 +137,6 @@
 }
 
 
-#header-search input::placeholder {
-    color: lightgray;
-}
 
-#header-menu {
-    color: white;
-    font-size: 4vh;
-    margin-right: 2vh;
-    align-self: center;
-}
 
-#header-text {
-    color: white;
-    font-size: 4vh;
-}
 
-.ol-overlaycontainer-stopevent {
-    display: none;
-}
-
-/* Optional: Makes the sample page fill the window. */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-}

@@ -1,11 +1,16 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://www.gstatic.com/firebasejs/5.8.0/firebase.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <script src="https://www.gstatic.com/firebasejs/5.8.0/firebase.js"></script>
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/GIScience/openrouteservice-js@master/dist/ors-js-client.js"></script>
+    <script src="routing.js"></script>
+    <script src="search.js"></script>
+    <script src="firebase.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <meta charset="UTF-8">
     <title>CRUIZE</title>
 </head>
 <body>
@@ -16,13 +21,14 @@
     </ul>
 </div>
 <div id="header-search">
-    <input id="search-bar" type="text" placeholder="Search...">
     <ul id="search-list"></ul>
+    <form action="#" id="search-form" onsubmit="return destinationSearch(this.elements[0].value);">
+        <input type="text" placeholder="Search..." id="search-bar">
+        <button type="submit" id="search-button" tabindex="-1"><i class="material-icons">search</i></button>
+    </form>
 </div>
-<div id="map" class="map"></div>
+<div id="map" onclick="document.getElementById('search-bar').blur();" class="map"></div>
 <div id="location" class="marker"><span class="icon-arrow-up"></span></div>
-<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/GIScience/openrouteservice-js@master/dist/ors-js-client.js"></script>
-<script src="script.js"></script>
+<script src="osmMap.js"></script>
 </body>
 </html>

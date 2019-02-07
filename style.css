@@ -67,6 +67,7 @@ html, body {
     font-size: 1.8rem;
     padding: 0.25rem 0.25rem 0.25rem 0.5rem;
     box-sizing: border-box;
+    width: 80vw;
 }
 
 #search-button {

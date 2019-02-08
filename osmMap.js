@@ -1,22 +1,24 @@
 osmMap = (function () {
 
-    let myPos = [0, 0];
+    let myPos = new ol.geom.Point([0, 0]);
 
     let myPosMarker = new ol.Feature({
-        geometry: new ol.geom.Point(myPos)
+        geometry: myPos,
     });
+    myPosMarker.setStyle(mapStyles.marker);
+    console.log(myPosMarker.getStyle());
+
     //myPosMarker.setId('myPositionMarker');
-
     let destinationMarker = new ol.Feature({
-        geometry: new ol.geom.Point(myPos),
-        style: new ol.style.Style()
+        geometry: new ol.geom.Point([0,0])
     });
-    //destinationMarker.setId('destinationMarker');
 
+    //destinationMarker.setId('destinationMarker');
     let navigationRoute = new ol.Feature({
         id: 'route',
-        type: 'route'
+        type: 'route',
     });
+    navigationRoute.setStyle(mapStyles.route);
 
     let vectorLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
@@ -46,91 +48,28 @@ osmMap = (function () {
     // listen to changes in position
     geolocation.on('change', function () {
         let projPos = ol.proj.fromLonLat(geolocation.getPosition());
-        myPos = projPos;
-        myPosMarker.getGeometry().setCoordinates(myPos);
+        myPos.setCoordinates(projPos);
         console.log(projPos);
     });
 
     function setDestinationMarker(destination) {
-        if(destinationMarker.getStyle() != null) {
-            destinationMarker.setStyle(null);
-            console.log('UNHIDE');
-        }
         destinationMarker.getGeometry().setCoordinates(destination.coords);
-        cameraAnim(myPos, destination.coords);
+        let newRoute = new Route(myPos.getCoordinates(), destination.coords);
+        newRoute.then(function(polyRoute) {
+            navigationRoute.setGeometry(polyRoute);
+            cameraAnim(myPos.getCoordinates(), destination.coords);
+        });
     }
 
     function cameraAnim(from, to) {
         let ext = ol.extent.boundingExtent([from, to]);
-        let view = map.getView();
-        view.fit(ext, map.getSize());
-        view.setZoom(view.getZoom() - 0.5);
+        map.getView().fit(ext, {duration: 1000});
     }
 
     return {
         setDestination: async function (placeName) {
             let destination = await new Destination(placeName);
-            setDestinationMarker(destination);
+            await setDestinationMarker(destination);
         }
     };
-
-    /*
-    function createRoute(polyline) {
-        let newPolyline = polyline.map(function (pos, index) {
-            pos = ol.proj.fromLonLat(pos);
-            return [pos[0], pos[1], index]
-        });
-        let newRoute = new ol.geom.MultiLineString([newPolyline], 'XYM');
-        route.setGeometry(newRoute);
-        moveClosestMarker();
-    }
-
-    function moveClosestMarker() {
-        let closestPoint = route.getGeometry().getClosestPoint(myPos);
-        markerClosest.getGeometry().setCoordinates(closestPoint);
-        console.log(Math.round(closestPoint[2]));
-    }
-
-    let destinationMarker = new ol.Feature({
-        geometry: new ol.geom.Point([0, 0]),
-    });
-    }
-
-    function calcRoute(dest) {
-        let myPosConv = ol.proj.toLonLat(myPos);
-        dest = ol.proj.toLonLat(dest);
-        console.log(dest);
-        console.log(myPosConv);
-        orsDirections.calculate({
-            coordinates: [myPosConv, dest],
-            profile: 'driving-car',
-            geometry_format: 'polyline',
-            format: 'json',
-        }).then(function (json) {
-            // Add your own result handling here
-            createRoute(json.routes[0].geometry);
-        }).catch(function (err) {
-            console.error(err);
-        });
-        cameraAnim(ol.proj.fromLonLat(dest), myPos);
-    }
-
-    function cameraAnim(from, to) {
-        let ext = ol.extent.boundingExtent([from, to]);
-        view.fit(ext, map.getSize());
-        view.setZoom(view.getZoom() - 0.5);
-        setTimeout(function () {
-            centerView(to);
-        }, 1000);
-    }
-
-    function centerView() {
-        view.animate({
-            center: myPos,
-            zoom: 18,
-            duration: 2000
-        })
-    }
-    */
-
 })();

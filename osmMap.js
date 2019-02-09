@@ -1,5 +1,7 @@
 osmMap = (function () {
 
+    let searchBar = document.getElementById('search-bar');
+
     let myPos = new ol.geom.Point([0, 0]);
 
     let myPosMarker = new ol.Feature({
@@ -10,7 +12,7 @@ osmMap = (function () {
 
     //myPosMarker.setId('myPositionMarker');
     let destinationMarker = new ol.Feature({
-        geometry: new ol.geom.Point([0,0])
+        geometry: new ol.geom.Point([0, 0])
     });
 
     //destinationMarker.setId('destinationMarker');
@@ -55,7 +57,7 @@ osmMap = (function () {
     function setDestinationMarker(destination) {
         destinationMarker.getGeometry().setCoordinates(destination.coords);
         let newRoute = new Route(myPos.getCoordinates(), destination.coords);
-        newRoute.then(function(polyRoute) {
+        newRoute.then(function (polyRoute) {
             navigationRoute.setGeometry(polyRoute);
             cameraAnim(myPos.getCoordinates(), destination.coords);
         });
@@ -63,12 +65,13 @@ osmMap = (function () {
 
     function cameraAnim(from, to) {
         let ext = ol.extent.boundingExtent([from, to]);
-        map.getView().fit(ext, {duration: 1000});
+        map.getView().fit(ext, {duration: 1000, padding: [50, 50, 50, 50]});
     }
 
     return {
-        setDestination: async function (placeName) {
-            let destination = await new Destination(placeName);
+        setDestination: async function () {
+            searchBar.blur();
+            let destination = await new Destination(searchBar.value);
             await setDestinationMarker(destination);
         }
     };

@@ -22,11 +22,10 @@
     </ul>
 </div>
 <div id="header-search">
-    <ul id="search-list"></ul>
-    <form action="#" id="search-form" onsubmit="return osmMap.setDestination(this.elements[0].value);">
-        <input type="text" placeholder="Search..." id="search-bar">
-        <button type="submit" id="search-button" tabindex="-1"><i class="material-icons">search</i></button>
-    </form>
+    <input type="text" placeholder="Search..." id="search-bar"
+           onkeydown="if(event.key === 'Enter') { osmMap.setDestination() }">
+    <button tabindex="-1" type="submit" id="search-button" onclick="osmMap.setDestination()"><i
+            class="material-icons">search</i></button>
 </div>
 <div id="map" onclick="document.getElementById('search-bar').blur();" class="map"></div>
 <div id="location" class="marker"><span class="icon-arrow-up"></span></div>

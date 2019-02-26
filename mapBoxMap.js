@@ -2,6 +2,8 @@ osmMap = (function () {
 
     let searchBar = document.getElementById('search-bar');
 
+    /*
+
     let myPos = new ol.geom.Point([0, 0]);
 
     let myPosMarker = new ol.Feature({
@@ -28,16 +30,29 @@ osmMap = (function () {
         })
     });
 
-    let map = new ol.Map({
-        target: 'map',
-        layers: [new ol.layer.Tile({
-            source: new ol.source.OSM()
-        }), vectorLayer],
-        view: new ol.View({
-            center: ol.proj.fromLonLat([-96, 40]),
-            zoom: 4
-        })
+    */
+
+    let map = new mapboxgl.Map({
+      container: 'map',
+      style: 'https://maps.tilehosting.com/styles/basic/style.json?key=krA7AaiD6YOc6KJVbdfr',
+      center: [0, -0],
+      zoom: 1.28
     });
+
+    let geolocate = new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+        trackUserLocation: true
+    });
+
+    map.addControl(geolocate);
+
+    map.on('load', function() {
+        geolocate.trigger();
+    });
+
+    /*
 
     let geolocation = new ol.Geolocation({
         // take the projection to use from the map's view
@@ -75,4 +90,5 @@ osmMap = (function () {
             await setDestinationMarker(destination);
         }
     };
+    */
 })();

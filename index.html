@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <script src="https://www.gstatic.com/firebasejs/5.8.0/firebase.js"></script>
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=fetch,Promise"></script>
-    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
-    <script src="https://cdn.rawgit.com/boundlessgeo/ol-mapbox-style/v3.0.1/dist/olms.js"></script>
+    <script src="https://cdn.klokantech.com/mapbox-gl-js/v0.53.0/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/GIScience/openrouteservice-js@master/dist/ors-js-client.js"></script>
     <script src="mapStyles.js"></script>
     <script src="routing.js"></script>
     <script src="search.js"></script>
     <script src="firebase.js"></script>
+    <link href="https://cdn.klokantech.com/mapbox-gl-js/v0.53.0/mapbox-gl.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>CRUIZE</title>
@@ -31,6 +31,6 @@
 </div>
 <div id="map" onclick="document.getElementById('search-bar').blur();" class="map"></div>
 <div id="location" class="marker"><span class="icon-arrow-up"></span></div>
-<script src="osmMap.js"></script>
+<script src="mapBoxMap.js"></script>
 </body>
 </html>

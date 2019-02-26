@@ -34,7 +34,7 @@ osmMap = (function () {
 
     let map = new mapboxgl.Map({
       container: 'map',
-      style: 'https://maps.tilehosting.com/styles/basic/style.json?key=krA7AaiD6YOc6KJVbdfr',
+      style: 'https://maps.tilehosting.com/styles/streets/style.json?key=krA7AaiD6YOc6KJVbdfr',
       center: [0, -0],
       zoom: 1.28
     });

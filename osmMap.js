@@ -29,7 +29,7 @@ osmMap = (function () {
     });
     vectorLayer.setZIndex(2);
 
-    let styleJson = 'https://maps.tilehosting.com/styles/darkmatter/style.json?key=krA7AaiD6YOc6KJVbdfr';
+    let styleJson = 'https://maps.tilehosting.com/styles/basic/style.json?key=krA7AaiD6YOc6KJVbdfr';
 
     let map = new ol.Map({
         target: 'map',
@@ -39,7 +39,7 @@ osmMap = (function () {
         })
     });
     olms.apply(map, styleJson);
-    map.addLayer(vectorLayer);
+    //map.addLayer(vectorLayer);
 
     let geolocation = new ol.Geolocation({
         // take the projection to use from the map's view

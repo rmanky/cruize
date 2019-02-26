@@ -27,19 +27,17 @@ osmMap = (function () {
             features: [myPosMarker, destinationMarker, navigationRoute]
         })
     });
-    vectorLayer.setZIndex(2);
-
-    let styleJson = 'https://maps.tilehosting.com/styles/basic/style.json?key=krA7AaiD6YOc6KJVbdfr';
 
     let map = new ol.Map({
         target: 'map',
+        layers: [new ol.layer.Tile({
+            source: new ol.source.OSM()
+        }), vectorLayer],
         view: new ol.View({
             center: ol.proj.fromLonLat([-96, 40]),
             zoom: 4
         })
     });
-    olms.apply(map, styleJson);
-    //map.addLayer(vectorLayer);
 
     let geolocation = new ol.Geolocation({
         // take the projection to use from the map's view

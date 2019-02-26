@@ -38,18 +38,27 @@ osmMap = (function () {
             padding: 100
         });
     }
-    /*
-
-    function cameraAnim(from, to) {
-        let ext = ol.extent.boundingExtent([from, to]);
-        map.getView().fit(ext, {duration: 1000, padding: [50, 50, 50, 50]});
-    }
-    */
 
     return {
         setDestination: async function () {
             let destination = await new Destination(searchBar.value);
             await setDestinationMarker(destination);
+            let geoJson = await new Route(myPos, destination.coords);
+            if(map.getLayer('route') == undefined) {
+                map.addLayer({
+                    "id": "route",
+                    "type": "line",
+                    "source": {
+                        "type": "geojson",
+                        "data": geoJson }
+                });
+            }
+            else {
+                map.getLayer('route').source = {
+                    "type": "geojson",
+                    "data": geoJson
+                }
+            }
         }
     };
 })();

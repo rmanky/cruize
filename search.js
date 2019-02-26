@@ -7,7 +7,6 @@ class Destination {
             ).then(function(json) {
                 let dest = [json[0].lon, json[0].lat];
                 dest = dest.map(Number);
-                dest = ol.proj.fromLonLat(dest);
                 let name = json[0].display_name;
                 return Promise.resolve([dest, name])
             }).catch(

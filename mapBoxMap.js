@@ -35,7 +35,7 @@ osmMap = (function () {
         destinationMarker.setLngLat(destination.coords);
         console.log(myPos);
         map.fitBounds([myPos, destination.coords], {
-            padding: 50
+            padding: 100
         });
     }
     /*

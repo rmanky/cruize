@@ -1,6 +1,6 @@
-osmMap = (function () {
+mapBoxMap = (function () {
 
-    let searchBar = document.getElementById('search-bar');
+    let searchBar = document.getElementById('search-input');
 
     let map = new mapboxgl.Map({
       container: 'map',

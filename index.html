@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -18,19 +18,14 @@
 </head>
 <body>
 <div id="header">
-    <ul id="header-list">
-        <li id="header-menu" class="material-icons">menu</li>
-        <li id="header-text"> CRUIZE</li>
-    </ul>
+    <h1 id="header-text"> CRUIZE </h1>
 </div>
-<div id="header-search">
-    <input type="text" placeholder="Search..." id="search-bar"
-           onkeydown="if(event.key === 'Enter') { osmMap.setDestination() }">
-    <button tabindex="-1" type="submit" id="search-button" onclick="osmMap.setDestination()"><i
-            class="material-icons">search</i></button>
+<div id="search-bar">
+    <i id="menu-button" class="material-icons">menu</i>
+    <input id="search-input" type="text" placeholder="Search..." onkeydown="if(event.key === 'Enter') { mapBoxMap.setDestination() }">
+    <i onclick="mapBoxMap.setDestination()" id="search-button" class="material-icons">search</i>
 </div>
 <div id="map" class="map"></div>
-<div id="location" class="marker"><span class="icon-arrow-up"></span></div>
 <script src="mapBoxMap.js"></script>
 </body>
 </html>

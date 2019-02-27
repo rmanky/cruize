@@ -64,6 +64,7 @@ mapBoxMap = (function() {
         // If the route layer exists, just set its data
         else {
             map.getSource('route').setData(geoJson);
+            map.setLayoutProperty('route', 'visibility', 'visible');
         }
     }
 
@@ -78,6 +79,9 @@ mapBoxMap = (function() {
             let geoJson = await new Route(myPos, destination);
             if (geoJson == undefined) {
                 console.log("No Route Found");
+                if (map.getLayer('route') != undefined) {
+                    map.setLayoutProperty('route', 'visibility', 'none');
+                }
                 return;
             }
             setRoute(geoJson);

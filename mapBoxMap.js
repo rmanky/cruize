@@ -54,10 +54,7 @@ mapBoxMap = (function () {
                 });
             }
             else {
-                map.getLayer('route').source = {
-                    "type": "geojson",
-                    "data": geoJson
-                }
+                 map.getSource('route').setData(geoJson);
             }
         }
     };

@@ -32,30 +32,44 @@ mapBoxMap = (function () {
     });
 
     function setDestinationMarker(destination) {
-        destinationMarker.setLngLat(destination.coords);
+        destinationMarker.setLngLat(destination);
         console.log(myPos);
     }
 
     return {
         setDestination: async function () {
             let destination = await new Destination(searchBar.value);
-            await setDestinationMarker(destination);
-            map.fitBounds([myPos, destination.coords], {
+            if(destination == undefined) {
+                console.log("Destination Not Found");
+                return;
+            }
+            setDestinationMarker(destination);
+            map.fitBounds([myPos, destination], {
                 padding: 100
             });
-            let geoJson = await new Route(myPos, destination.coords);
+            let geoJson = await new Route(myPos, destination);
+            if(geoJson == undefined) {
+                console.log("No Route Found");
+                return;
+            }
             if(map.getLayer('route') == undefined) {
                 map.addLayer({
                     "id": "route",
                     "type": "line",
                     "source": {
                         "type": "geojson",
-                        "data": geoJson }
+                        "data": geoJson
+                    },
+                    "paint": {
+                        'line-color': '#3887be',
+                        'line-width': {
+                        base: 1,
+                        stops: [[12, 3], [22, 12]]
+                        }
+                    }
                 });
             }
-            else {
-                 map.getSource('route').setData(geoJson);
-            }
+            map.getSource('route').setData(geoJson);
         }
     };
 })();

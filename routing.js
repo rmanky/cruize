@@ -9,11 +9,11 @@ class Route {
                 profile: 'driving-car',
                 format: 'geojson',
             }).then(function (json) {
-                let geoJson = json.features[0];
-                return Promise.resolve(geoJson);
-            }).catch(function (err) {
-                console.error(err);
-            });
+                if(json.features[0] != undefined) {
+                    let geoJson = json.features[0];
+                    return Promise.resolve(geoJson);
+                }
+            }).catch(() => {});
         })();
     }
 }

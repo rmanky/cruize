@@ -7,7 +7,6 @@
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=fetch,Promise"></script>
     <script src="https://cdn.klokantech.com/mapbox-gl-js/v0.53.0/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/GIScience/openrouteservice-js@master/dist/ors-js-client.js"></script>
-    <script src="mapStyles.js"></script>
     <script src="routing.js"></script>
     <script src="search.js"></script>
     <script src="firebase.js"></script>
@@ -17,9 +16,6 @@
     <title>CRUIZE</title>
 </head>
 <body>
-<div id="header">
-    <h1 id="header-text"> CRUIZE </h1>
-</div>
 <div id="search-bar">
     <i id="menu-button" class="material-icons">menu</i>
     <input id="search-input" type="text" placeholder="Search..." onkeydown="if(event.key === 'Enter') { mapBoxMap.setDestination() }">

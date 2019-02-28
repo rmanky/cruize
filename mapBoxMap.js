@@ -37,9 +37,6 @@ mapBoxMap = (function() {
     function setDestinationMarker(destination) {
         destinationMarker.setLngLat(destination);
         destinationMarker.addTo(map);
-        map.fitBounds([myPos, destination], {
-            padding: 100
-        });
     }
 
     function setRoute(geoJson) {
@@ -78,11 +75,19 @@ mapBoxMap = (function() {
     }
 
     function noRoute() {
-        console.log(blackOut);
         blackOut.classList.add('unhide');
+        setDestinationMarker(myPos);
+        map.flyTo({ center: myPos, zoom: 15 });
+        hideRoute();
         setTimeout(function() {
             blackOut.classList.remove('unhide');
-        }, 5000);
+        }, 3000);
+    }
+
+    function hideRoute() {
+        if (map.getLayer('route') != undefined) {
+            map.setLayoutProperty('route', 'visibility', 'none');
+        }
     }
 
     return {
@@ -90,8 +95,12 @@ mapBoxMap = (function() {
             try {
                 let destination = await new Destination(searchBar.value);
                 setDestinationMarker(destination);
+                hideRoute();
                 let geoJson = await new Route(myPos, destination);
                 if (geoJson != undefined) {
+                    map.fitBounds([myPos, destination], {
+                        padding: 100
+                    });
                     setRoute(geoJson);
                 }
                 else {

@@ -76,7 +76,7 @@ mapBoxMap = (function() {
 
     function noRoute() {
         blackOut.classList.add('unhide');
-        setDestinationMarker(myPos);
+        destinationMarker.remove();
         map.flyTo({ center: myPos, zoom: 15 });
         hideRoute();
         setTimeout(function() {

@@ -1,6 +1,7 @@
 mapBoxMap = (function() {
 
     let searchBar = document.getElementById('search-input');
+    let blackOut = document.getElementById('blackout');
 
     let destinationMarker = new mapboxgl.Marker();
 
@@ -68,23 +69,38 @@ mapBoxMap = (function() {
         }
     }
 
+    function noDestination() {
+        console.log("Destination Not Found");
+        searchBar.classList.add('invalid');
+        setTimeout(function() {
+            searchBar.classList.remove('invalid');
+        }, 500);
+    }
+
+    function noRoute() {
+        console.log(blackOut);
+        blackOut.classList.add('unhide');
+        setTimeout(function() {
+            blackOut.classList.remove('unhide');
+        }, 5000);
+    }
+
     return {
         setDestination: async function() {
-            let destination = await new Destination(searchBar.value);
-            if (destination == undefined) {
-                console.log("Destination Not Found");
-                return;
-            }
-            setDestinationMarker(destination);
-            let geoJson = await new Route(myPos, destination);
-            if (geoJson == undefined) {
-                console.log("No Route Found");
-                if (map.getLayer('route') != undefined) {
-                    map.setLayoutProperty('route', 'visibility', 'none');
+            try {
+                let destination = await new Destination(searchBar.value);
+                setDestinationMarker(destination);
+                let geoJson = await new Route(myPos, destination);
+                if (geoJson != undefined) {
+                    setRoute(geoJson);
                 }
-                return;
+                else {
+                    noRoute();
+                }
             }
-            setRoute(geoJson);
+            catch (err) {
+                noDestination();
+            }
         }
     };
 })();

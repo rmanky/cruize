@@ -1,8 +1,8 @@
 class Destination {
     constructor(placeName) {
-        return (async () => {
+        return (() => {
             // All async code here
-            return await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + placeName).then(
+            return fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + placeName).then(
                 response => response.json()
             ).then(function(json) {
                 if(json[0] != undefined) {
@@ -11,7 +11,7 @@ class Destination {
                     return Promise.resolve(dest)
                 }
             }).catch(function (err) {
-                console.error(err);
+                return Promise.reject(err)
             });
         })();
     }

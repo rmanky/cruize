@@ -29,41 +29,44 @@ mapBoxMap = (function() {
         myPos = [e.coords.longitude, e.coords.latitude];
     });
 
-
     map.on('load', function() {
         geolocate.trigger();
     });
 
-    function setDestinationMarker(destination) {
+    function removeRoute() {
+        // Check to see if there is an existing route and remove it
+        if (map.getLayer('route') != undefined) {
+            map.removeLayer('route');
+            map.removeSource('route');
+        }
+    }
+
+    function setMarker(destination) {
         destinationMarker.setLngLat(destination);
         destinationMarker.addTo(map);
+        map.fitBounds([myPos, destination], {
+            padding: 100
+        });
+        removeRoute();
     }
 
     function setRoute(geoJson) {
-        // Check to see if there is an existing route
-        if (map.getLayer('route') == undefined) {
-            // If not, add a route to the map with our geoJson
-            map.addLayer({
-                "id": "route",
-                "type": "line",
-                "source": {
-                    "type": "geojson",
-                    "data": geoJson
-                },
-                "paint": {
-                    'line-color': '#3887be',
-                    'line-width': {
-                        base: 1,
-                        stops: [[12, 3], [22, 12]]
-                    }
+        // Add a route to the map with our geoJson
+        map.addLayer({
+            "id": "route",
+            "type": "line",
+            "source": {
+                "type": "geojson",
+                "data": geoJson
+            },
+            "paint": {
+                'line-color': '#3887be',
+                'line-width': {
+                    base: 1,
+                    stops: [[12, 3], [22, 12]]
                 }
-            });
-        }
-        // If the route layer exists, just set its data
-        else {
-            map.getSource('route').setData(geoJson);
-            map.setLayoutProperty('route', 'visibility', 'visible');
-        }
+            }
+        });
     }
 
     function noDestination() {
@@ -74,37 +77,17 @@ mapBoxMap = (function() {
         }, 500);
     }
 
-    function noRoute() {
-        blackOut.classList.add('unhide');
-        destinationMarker.remove();
-        map.flyTo({ center: myPos, zoom: 15 });
-        hideRoute();
-        setTimeout(function() {
-            blackOut.classList.remove('unhide');
-        }, 3000);
-    }
-
-    function hideRoute() {
-        if (map.getLayer('route') != undefined) {
-            map.setLayoutProperty('route', 'visibility', 'none');
-        }
-    }
-
     return {
         setDestination: async function() {
             try {
                 let destination = await new Destination(searchBar.value);
-                setDestinationMarker(destination);
-                hideRoute();
+                setMarker(destination);
                 let geoJson = await new Route(myPos, destination);
                 if (geoJson != undefined) {
-                    map.fitBounds([myPos, destination], {
-                        padding: 100
-                    });
                     setRoute(geoJson);
                 }
                 else {
-                    noRoute();
+                    //TODO: Handle no route
                 }
             }
             catch (err) {

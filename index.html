@@ -16,10 +16,14 @@
     <title>CRUIZE</title>
 </head>
 <body>
-<div id="blackout"> <div id="secret"> </div> </div>
+<div id="begin-nav">
+    <p class="dest-info" id="destination-name"> Destination Name </p>
+    <p class="dest-info" id="route-distance"> 999.99 Miles </p>
+    <p class="dest-info"> idk this part isn't really done yet </p>
+</div>
 <div id="search-bar">
     <i id="menu-button" class="material-icons">menu</i>
-    <input id="search-input" type="text" placeholder="Search..." onkeydown="if(event.key === 'Enter') { mapBoxMap.setDestination() }">
+    <input autocomplete="off" id="search-input" type="text" placeholder="Search..." onkeydown="if(event.key === 'Enter') { mapBoxMap.setDestination() }">
     <i onclick="mapBoxMap.setDestination()" id="search-button" class="material-icons">search</i>
 </div>
 <div id="map" class="map"></div>

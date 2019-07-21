@@ -1,18 +1,28 @@
 class Route {
-    constructor(pos, dest) {
-        let orsDirections = new Openrouteservice.Directions({
-            api_key: '5b3ce3597851110001cf6248a488307605e94252ab6ba375cc36a86e'
-        });
-        return (() => {
-            return orsDirections.calculate({
-                coordinates: [pos, dest],
-                profile: 'driving-car',
-                format: 'geojson',
-            }).then(function (json) {
-                if(json[0] != 'features') {
-                    return json.features[0];
-                }
-            }).catch(() => {});
-        })();
+    constructor(pos, dest, setRoute) {
+        this.pos = pos;
+        this.dest = dest;
+        this.setRoute = setRoute;
+
+    }
+
+    getRoute() {
+        let setRoute = this.setRoute;
+
+        var request = new XMLHttpRequest();
+        let apiKey = '5b3ce3597851110001cf62487047438327554bc38492d0c77626eeb2';
+        let routeFetchURL = 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=' + apiKey + '&start=' + this.pos + '&end=' + this.dest;
+
+        request.open('GET', routeFetchURL);
+
+        request.setRequestHeader('Accept', 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8');
+
+        request.send();
+
+        request.onload = function() {
+            let json = JSON.parse(request.response);
+            setRoute(json.features[0]);
+        }
     }
 }
+

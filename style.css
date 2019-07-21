@@ -1,17 +1,7 @@
 body, html {
     margin: 0;
     padding: 0;
-}
-
-#blackout {
-    z-index: 3;
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    background-color: black;
-    display: none;
+    font-family: Arial;
 }
 
 .unhide
@@ -19,14 +9,10 @@ body, html {
     display: block !important;
 }
 
-#secret {
-    width: 100%;
-    height: 100%;
-    z-index: 4;
-    background-image: url("https://media.giphy.com/media/FT5GMQg19X0GY/giphy.gif");
-    background-size:     contain;                      /* <------ */
-    background-repeat:   no-repeat;
-    background-position: center center;
+.beginNav
+{
+    max-height: 500px !important;
+    transition: max-height 0.25s ease-in !important;
 }
 
 #map {
@@ -35,6 +21,31 @@ body, html {
     top: 0;
     left: 0;
     right: 0;
+}
+
+#begin-nav {
+    z-index: 1;
+    overflow: hidden;
+    position: absolute;
+    margin: 12px auto;
+    right: 0;
+    left: 0;
+    bottom: 48px;
+    width: 100%;
+    max-width: 347px;
+    height: auto;
+    max-height: 0px;
+    background-color: darkslateblue;
+    border-radius: 12px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dest-info {
+    padding: 0 12px;
+    color: white;
+    font-size: 18px;
+    width: fit-content;
+    margin: 12px auto;
 }
 
 #search-bar {
@@ -50,31 +61,6 @@ body, html {
     border-radius: 12px 12px 0px 0px;
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
 }
-
-.invalid {
-    color: red;
-    animation: shake .5s linear;
-}
-
-@keyframes shake {
-    8%, 41% {
-        transform: translateX(-10px);
-    }
-    25%, 58% {
-        transform: translateX(10px);
-    }
-    75% {
-        transform: translateX(-5px);
-    }
-    92% {
-        transform: translateX(5px);
-    }
-    0%, 100% {
-        transform: translateX(0);
-    }
-}
-
-
 
 #menu-button {
     z-index: 1;
@@ -98,7 +84,7 @@ body, html {
     max-width: 400px;
     height: 48px;
     padding: 12px 64px 11px 64px;
-    font-size: 100%;
+    font-size: 18px;
 }
 
 #search-button {
@@ -109,4 +95,27 @@ body, html {
     display: block;
     padding: 12px 15px;
     margin: 0;
+}
+
+.invalid {
+    color: red;
+    animation: shake .5s linear;
+}
+
+@keyframes shake {
+    8%, 41% {
+        transform: translateX(-10px);
+    }
+    25%, 58% {
+        transform: translateX(10px);
+    }
+    75% {
+        transform: translateX(-5px);
+    }
+    92% {
+        transform: translateX(5px);
+    }
+    0%, 100% {
+        transform: translateX(0);
+    }
 }

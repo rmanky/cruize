@@ -1,7 +1,7 @@
 mapBoxMap = (function() {
 
     let searchBar = document.getElementById('search-input');
-    let blackOut = document.getElementById('blackout');
+    let beginNav = document.getElementById('begin-nav');
 
     let destinationMarker = new mapboxgl.Marker();
 
@@ -39,6 +39,7 @@ mapBoxMap = (function() {
             map.removeLayer('route');
             map.removeSource('route');
         }
+        beginNav.classList.remove('beginNav');
     }
 
     function setMarker(destination) {
@@ -67,6 +68,8 @@ mapBoxMap = (function() {
                 }
             }
         });
+
+        beginNav.classList.add('beginNav')
     }
 
     function noDestination() {
@@ -77,22 +80,30 @@ mapBoxMap = (function() {
         }, 500);
     }
 
+    function noRoute() {
+        console.log("Route Not Found");
+    }
+
+    function getRoute(destination) {
+        let geoJson = new Route(myPos, destination, setRoute);
+        geoJson.getRoute();
+    }
+
+
+
     return {
         setDestination: async function() {
             try {
                 let destination = await new Destination(searchBar.value);
                 setMarker(destination);
-                let geoJson = await new Route(myPos, destination);
-                if (geoJson != undefined) {
-                    setRoute(geoJson);
-                }
-                else {
-                    //TODO: Handle no route
-                }
+                getRoute(destination);
             }
             catch (err) {
                 noDestination();
+                console.log(err);
             }
         }
     };
+
+
 })();

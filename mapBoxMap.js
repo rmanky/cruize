@@ -97,6 +97,7 @@ mapBoxMap = (function() {
                 let destination = await new Destination(searchBar.value);
                 setMarker(destination);
                 getRoute(destination);
+                // fix me?
             }
             catch (err) {
                 noDestination();

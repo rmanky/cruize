@@ -1,5 +1,7 @@
 mapBoxMap = (function() {
 
+    let labelId = "background";
+
     let searchBar = document.getElementById('search-input');
     let beginNav = document.getElementById('begin-nav');
 
@@ -12,6 +14,7 @@ mapBoxMap = (function() {
         zoom: 1.28,
         attributionControl: false
     });
+
     map.addControl(new mapboxgl.AttributionControl(), 'top-left');
 
     let myPos = [0, 0];
@@ -31,6 +34,16 @@ mapBoxMap = (function() {
 
     map.on('load', function() {
         geolocate.trigger();
+
+        // find the first layer with symbols to draw route behind
+        let layers = map.getStyle().layers;
+        for(i = 0; i < layers.length; i++) {
+            let layer = layers[i];
+            if (layer.type == 'symbol') {
+                labelId = layer.id;
+                break;
+            }
+        }
     });
 
     function removeRoute() {
@@ -48,12 +61,17 @@ mapBoxMap = (function() {
         destinationMarker.addTo(map);
 
         beginNav.classList.add("beginNav");
-        destinationName = destinationName.substring(0, destinationName.indexOf(","));
         document.getElementById("destName").innerHTML = destinationName;
     }
 
-    function setRoute(json) {
-        map.fitBounds(json.bbox, {
+    function setRoute(routes) {
+        let geoJson = routes[0].geometry;
+        let coordinates = geoJson.coordinates;
+        let bounds = coordinates.reduce(function(bounds, coord) {
+            return bounds.extend(coord);
+        }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+
+        map.fitBounds(bounds, {
             padding: {
                 top: 100,
                 bottom: 200,
@@ -61,8 +79,8 @@ mapBoxMap = (function() {
                 right: 100
             }
         });
-        let geoJson = json.features[0];
-        map.addLayer({
+
+        let routeLayer = map.addLayer({
             "id": "route",
             "type": "line",
             "source": {
@@ -76,7 +94,7 @@ mapBoxMap = (function() {
                     stops: [[12, 3], [22, 12]]
                 }
             }
-        });
+        }, labelId);
     }
 
     function noDestination() {
@@ -91,20 +109,15 @@ mapBoxMap = (function() {
         console.log("Route Not Found");
     }
 
-    function getRoute(destination) {
-        let geoJson = new Route(myPos, destination, setRoute);
-        geoJson.getRoute();
-    }
-
     return {
         setDestination: async function() {
             try {
                 let destinationJson = await new Destination(searchBar.value);
-                console.log(destinationJson);
-                let dest = [destinationJson.lon, destinationJson.lat].map(Number);
-                setMarker(dest, destinationJson.display_name);
-                getRoute(dest);
-                // fix me?
+                let firstDest = destinationJson.features[0];
+                let dest = firstDest.center;
+                setMarker(dest, firstDest.place_name);
+                let routeJson = await new Route(myPos, dest, setRoute);
+                setRoute(routeJson.routes);
             }
             catch (err) {
                 noDestination();

@@ -6,9 +6,7 @@ class Destination {
                 response => response.json()
             ).then(function(json) {
                 if(json[0] != undefined) {
-                    let dest = [json[0].lon, json[0].lat];
-                    dest = dest.map(Number);
-                    return Promise.resolve(dest)
+                    return Promise.resolve(json[0])
                 }
             }).catch(function (err) {
                 return Promise.reject(err)

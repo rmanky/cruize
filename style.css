@@ -12,7 +12,6 @@ body, html {
 .beginNav
 {
     max-height: 500px !important;
-    transition: max-height 0.25s ease-in !important;
 }
 
 #map {
@@ -38,6 +37,7 @@ body, html {
     background-color: darkslateblue;
     border-radius: 12px;
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+    transition: max-height 0.25s ease-in !important;
 }
 
 .dest-info {
@@ -46,6 +46,7 @@ body, html {
     font-size: 18px;
     width: fit-content;
     margin: 12px auto;
+    text-align: center;
 }
 
 #search-bar {

@@ -7,7 +7,7 @@ mapBoxMap = (function() {
 
     let map = new mapboxgl.Map({
         container: 'map',
-        style: 'https://maps.tilehosting.com/styles/streets/style.json?key=krA7AaiD6YOc6KJVbdfr',
+        style: 'https://api.maptiler.com/maps/streets/style.json?key=krA7AaiD6YOc6KJVbdfr',
         center: [0, -0],
         zoom: 1.28,
         attributionControl: false
@@ -42,17 +42,26 @@ mapBoxMap = (function() {
         beginNav.classList.remove('beginNav');
     }
 
-    function setMarker(destination) {
+    function setMarker(destination, destinationName) {
+        removeRoute();
         destinationMarker.setLngLat(destination);
         destinationMarker.addTo(map);
-        map.fitBounds([myPos, destination], {
-            padding: 100
-        });
-        removeRoute();
+
+        beginNav.classList.add("beginNav");
+        destinationName = destinationName.substring(0, destinationName.indexOf(","));
+        document.getElementById("destName").innerHTML = destinationName;
     }
 
-    function setRoute(geoJson) {
-        // Add a route to the map with our geoJson
+    function setRoute(json) {
+        map.fitBounds(json.bbox, {
+            padding: {
+                top: 100,
+                bottom: 200,
+                left: 100,
+                right: 100
+            }
+        });
+        let geoJson = json.features[0];
         map.addLayer({
             "id": "route",
             "type": "line",
@@ -68,8 +77,6 @@ mapBoxMap = (function() {
                 }
             }
         });
-
-        beginNav.classList.add('beginNav')
     }
 
     function noDestination() {
@@ -89,14 +96,14 @@ mapBoxMap = (function() {
         geoJson.getRoute();
     }
 
-
-
     return {
         setDestination: async function() {
             try {
-                let destination = await new Destination(searchBar.value);
-                setMarker(destination);
-                getRoute(destination);
+                let destinationJson = await new Destination(searchBar.value);
+                console.log(destinationJson);
+                let dest = [destinationJson.lon, destinationJson.lat].map(Number);
+                setMarker(dest, destinationJson.display_name);
+                getRoute(dest);
                 // fix me?
             }
             catch (err) {
@@ -105,6 +112,4 @@ mapBoxMap = (function() {
             }
         }
     };
-
-
 })();

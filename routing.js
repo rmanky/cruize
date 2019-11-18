@@ -3,7 +3,6 @@ class Route {
         this.pos = pos;
         this.dest = dest;
         this.setRoute = setRoute;
-
     }
 
     getRoute() {
@@ -21,7 +20,7 @@ class Route {
 
         request.onload = function() {
             let json = JSON.parse(request.response);
-            setRoute(json.features[0]);
+            setRoute(json);
         }
     }
 }

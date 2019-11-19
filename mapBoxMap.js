@@ -71,6 +71,9 @@ mapBoxMap = (function() {
             return bounds.extend(coord);
         }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 
+
+        //let leg = routes[0].legs[0];
+
         map.fitBounds(bounds, {
             padding: {
                 top: 100,

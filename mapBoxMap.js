@@ -52,19 +52,16 @@ mapBoxMap = (function() {
             map.removeLayer('route');
             map.removeSource('route');
         }
-        beginNav.classList.remove('beginNav');
     }
 
-    function setMarker(destination, destinationName) {
+    function setMarker(destination) {
         removeRoute();
         destinationMarker.setLngLat(destination);
         destinationMarker.addTo(map);
-
-        beginNav.classList.add("beginNav");
-        document.getElementById("destName").innerHTML = destinationName;
+        
     }
 
-    function setRoute(routes) {
+    function setRoute(routes, destinationName) {
         let geoJson = routes[0].geometry;
         let coordinates = geoJson.coordinates;
         let bounds = coordinates.reduce(function(bounds, coord) {
@@ -73,7 +70,12 @@ mapBoxMap = (function() {
 
 
         //let leg = routes[0].legs[0];
+        console.log(routes[0]);
+        let distance = Math.round(routes[0].distance / 16.09344) / 100;
 
+        document.getElementById("destName").innerHTML = destinationName;
+        document.getElementById("routeDist").innerHTML = distance + " Miles";
+        
         map.fitBounds(bounds, {
             padding: {
                 top: 100,
@@ -115,12 +117,14 @@ mapBoxMap = (function() {
     return {
         setDestination: async function() {
             try {
+                beginNav.classList.remove("beginNav");
                 let destinationJson = await new Destination(searchBar.value);
                 let firstDest = destinationJson.features[0];
                 let dest = firstDest.center;
-                setMarker(dest, firstDest.place_name);
+                setMarker(dest);
                 let routeJson = await new Route(myPos, dest, setRoute);
-                setRoute(routeJson.routes);
+                setRoute(routeJson.routes, firstDest.place_name);
+                beginNav.classList.add("beginNav");
             }
             catch (err) {
                 noDestination();

@@ -17,8 +17,9 @@ mapBoxMap = (function() {
 
     map.addControl(new mapboxgl.AttributionControl(), 'top-left');
 
-    let myPos = [0, 0];
+    let myPos = [-71.128395, 42.301591];
 
+    /*
     let geolocate = new mapboxgl.GeolocateControl({
         positionOptions: {
             enableHighAccuracy: true
@@ -31,9 +32,10 @@ mapBoxMap = (function() {
     geolocate.on('geolocate', (e) => {
         myPos = [e.coords.longitude, e.coords.latitude];
     });
+    */
 
     map.on('load', function() {
-        geolocate.trigger();
+        //geolocate.trigger();
 
         // find the first layer with symbols to draw route behind
         let layers = map.getStyle().layers;

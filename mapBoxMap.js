@@ -33,7 +33,7 @@ mapBoxMap = (function() {
     });
 
     map.on('load', function() {
-        //geolocate.trigger();
+        geolocate.trigger();
 
         // find the first layer with symbols to draw route behind
         let layers = map.getStyle().layers;
